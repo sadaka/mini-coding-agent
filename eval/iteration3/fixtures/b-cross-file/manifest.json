@@ -1,0 +1,8 @@
+{
+  "task": "euro-price-rendering",
+  "repo_type": "B",
+  "relevant_files": ["ledgerlib/settings.py", "ledgerlib/money.py"],
+  "acceptable_files": ["ledgerlib/report.py"],
+  "target_symbols": ["parse_currency", "render"],
+  "verification": { "command": "python3 checks/check_report.py" }
+}

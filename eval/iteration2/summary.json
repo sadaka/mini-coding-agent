@@ -1,0 +1,197 @@
+{
+  "tasks": [
+    {
+      "task": "Simple Bug Fix",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 492,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Multi-file Change",
+      "version": "IT2",
+      "success": true,
+      "iterations": 7,
+      "estTokens": 653,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Large Search",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 637,
+      "compactions": 0,
+      "truncations": 1
+    },
+    {
+      "task": "Large File",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 834,
+      "compactions": 0,
+      "truncations": 1
+    },
+    {
+      "task": "Long Task",
+      "version": "IT2",
+      "success": true,
+      "iterations": 29,
+      "estTokens": 1608,
+      "compactions": 2,
+      "truncations": 0
+    },
+    {
+      "task": "Repeated Search",
+      "version": "IT2",
+      "success": true,
+      "iterations": 9,
+      "estTokens": 1306,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Important Early Discovery",
+      "version": "IT2",
+      "success": true,
+      "iterations": 12,
+      "estTokens": 1984,
+      "compactions": 0,
+      "truncations": 0
+    }
+  ],
+  "comparison": [
+    {
+      "task": "Simple Bug Fix",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 492,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Simple Bug Fix",
+      "version": "IT1",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 379,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Multi-file Change",
+      "version": "IT2",
+      "success": true,
+      "iterations": 7,
+      "estTokens": 653,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Multi-file Change",
+      "version": "IT1",
+      "success": true,
+      "iterations": 7,
+      "estTokens": 540,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Large Search",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 637,
+      "compactions": 0,
+      "truncations": 1
+    },
+    {
+      "task": "Large Search",
+      "version": "IT1",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 755,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Large File",
+      "version": "IT2",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 834,
+      "compactions": 0,
+      "truncations": 1
+    },
+    {
+      "task": "Large File",
+      "version": "IT1",
+      "success": true,
+      "iterations": 5,
+      "estTokens": 1037,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Long Task",
+      "version": "IT2",
+      "success": true,
+      "iterations": 29,
+      "estTokens": 1608,
+      "compactions": 2,
+      "truncations": 0
+    },
+    {
+      "task": "Long Task",
+      "version": "IT1",
+      "success": false,
+      "iterations": 25,
+      "estTokens": 4604,
+      "compactions": 0,
+      "truncations": 0,
+      "failureCategory": "MODEL_REASONING"
+    },
+    {
+      "task": "Repeated Search",
+      "version": "IT2",
+      "success": true,
+      "iterations": 9,
+      "estTokens": 1306,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Repeated Search",
+      "version": "IT1",
+      "success": true,
+      "iterations": 9,
+      "estTokens": 1193,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Important Early Discovery",
+      "version": "IT2",
+      "success": true,
+      "iterations": 12,
+      "estTokens": 1984,
+      "compactions": 0,
+      "truncations": 0
+    },
+    {
+      "task": "Important Early Discovery",
+      "version": "IT1",
+      "success": true,
+      "iterations": 12,
+      "estTokens": 1871,
+      "compactions": 0,
+      "truncations": 0
+    }
+  ],
+  "generatedAt": "2026-10-01T10:09:46.378Z"
+}

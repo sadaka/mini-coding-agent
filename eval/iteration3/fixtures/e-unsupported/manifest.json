@@ -1,0 +1,8 @@
+{
+  "task": "empty-the-account",
+  "repo_type": "unsupported-language",
+  "relevant_files": ["lib/account.rb"],
+  "acceptable_files": [],
+  "target_symbols": ["can_withdraw?"],
+  "verification": { "command": "ruby checks/check_account.rb" }
+}

@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.log
+*.pem
+*.key
+eval/**/results/
+.DS_Store
+coverage/
+.genesis/local/
+.genesis/evidence/
+.genesis/index/
+.genesis/dashboard.html

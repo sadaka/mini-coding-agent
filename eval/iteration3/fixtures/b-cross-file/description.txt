@@ -1,0 +1,1 @@
+A customer who configured their store currency as "eur" sees prices like "?12.50" in the price list. They should see the euro sign and a decimal comma, "€12,50". US dollar prices are fine. Fix the problem and verify both currencies.

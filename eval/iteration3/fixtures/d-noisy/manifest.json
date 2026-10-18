@@ -1,0 +1,8 @@
+{
+  "task": "week-starts-on-monday",
+  "repo_type": "D",
+  "relevant_files": ["src/report/week.js"],
+  "acceptable_files": ["src/report/email.js"],
+  "target_symbols": ["weekStart", "weekDays"],
+  "verification": { "command": "node checks/week.check.js" }
+}

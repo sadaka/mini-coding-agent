@@ -1,0 +1,28 @@
+{
+  "runs": 3,
+  "passed": 3,
+  "successRate": 1,
+  "results": [
+    {
+      "run": 1,
+      "agentStatus": "success",
+      "verified": true,
+      "reason": "file fixed + npm test passed",
+      "logFile": "eval/run1.log"
+    },
+    {
+      "run": 2,
+      "agentStatus": "success",
+      "verified": true,
+      "reason": "file fixed + npm test passed",
+      "logFile": "eval/run2.log"
+    },
+    {
+      "run": 3,
+      "agentStatus": "success",
+      "verified": true,
+      "reason": "file fixed + npm test passed",
+      "logFile": "eval/run3.log"
+    }
+  ]
+}

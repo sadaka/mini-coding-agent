@@ -1,0 +1,295 @@
+#!/usr/bin/env bash
+# Adds the Iteration 3 tasks to the Genesis ledger.
+# RUN ONLY AFTER the human has run: genesis spec approve . --human NAME --reason "..."
+# Then: genesis plan check .  ->  show .genesis/PLAN.md  ->  human runs genesis plan approve.
+set -euo pipefail
+cd "$(dirname "$0")/../.."
+genesis task add . --id IMPL-IT3-0 \
+  --outcome 'Iteration 2 is frozen as the evaluation baseline and its health is on record before any Iteration 3 change: src/ copied to eval/iteration3/baseline-src/, eval/iteration3/baseline-report.md lists the 100 passing tests and tsc status, the Iteration 2 retrospective defects (fixed or documented), the paused IMPL-IT2-1, rejected IMPL-7, the open DECISION-c0d3e4f4 review, compaction never exercised against a real provider, and '\''verification not performed'\'' for projects with no test command (affects the static-site task). No product code changes.' \
+  --risk low \
+  --requirement FR-66 \
+  --requirement AC-40 \
+  --requirement NFR-19 \
+  --scope 'eval/iteration3' \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'regression:npx vitest run' \
+  --gate 'report:node -e "const fs=require('\''fs'\'');for(const p of ['\''eval/iteration3/baseline-report.md'\'','\''eval/iteration3/baseline-src/agent/loop.ts'\'','\''eval/iteration3/baseline-src/tools/search.ts'\''])fs.accessSync(p);const r=fs.readFileSync('\''eval/iteration3/baseline-report.md'\'','\''utf8'\'');for(const k of ['\''100 tests'\'','\''IMPL-IT2-1'\'','\''DECISION-c0d3e4f4'\'','\''retrospective'\'','\''real provider'\'','\''no test command'\''])if(!r.includes(k))throw new Error('\''missing '\''+k);console.log('\''OK'\'')"' \
+  --scenario '{"id":"baseline-frozen","actor":"Developer","scope":"eval/iteration3","environment":"local, offline","duration":"one-off","observable":"baseline-src mirrors current src and the report names every inherited open item","gate":"report"}'
+genesis task add . --id IMPL-IT3-1 \
+  --outcome 'src/navigation/scope.ts decides what navigation may inspect: default exclusions (configurable), git check-ignore when the workspace is a Git repo, binary detection, *.min.js/css exclusion, and a realpath-based workspace boundary that rejects symlink escape. Pure module with no tool wiring.' \
+  --risk medium \
+  --requirement FR-42 \
+  --requirement FR-43 \
+  --requirement FR-44 \
+  --requirement FR-45 \
+  --requirement NFR-15 \
+  --requirement NFR-18 \
+  --requirement AC-23 \
+  --scope 'src/navigation/scope.ts' \
+  --scope 'tests/unit/navigation/scope.test.ts' \
+  --depends IMPL-IT3-0 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/scope.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"scope-filters","actor":"Navigation tool","scope":"temp Git repo and temp non-Git dir fixtures","environment":"local, git optional","duration":"<5s","observable":"ignored, default-excluded, minified and binary paths are filtered; symlink to outside is rejected; non-Git dir falls back to defaults","gate":"tests"}'
+genesis task add . --id IMPL-IT3-2 \
+  --outcome 'src/navigation/list-directory.ts registers list_directory (path, depth, includeHidden): scope-filtered, deterministic order, depth bound, entry ceiling with truncation notice, clear errors for missing dir and workspace escape.' \
+  --risk low \
+  --requirement FR-46 \
+  --requirement NFR-16 \
+  --requirement AC-24 \
+  --scope 'src/navigation/list-directory.ts' \
+  --scope 'tests/unit/navigation/list-directory.test.ts' \
+  --depends IMPL-IT3-1 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/list-directory.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"list-bounded","actor":"Agent via tool call","scope":"fixture repo with >ceiling entries","environment":"local","duration":"<5s","observable":"ordered, bounded listing with notice; error on ../ and nonexistent dir","gate":"tests"}'
+genesis task add . --id IMPL-IT3-3 \
+  --outcome 'src/tools/search.ts is extended in place: mode content|filename|both, scope filtering, deterministic order, rg executable when present else built-in bounded scan with identical output format; every existing parameter and the '\''No results found.'\'' / truncation messages keep working.' \
+  --risk low \
+  --requirement FR-47 \
+  --requirement NFR-16 \
+  --requirement NFR-18 \
+  --requirement AC-25 \
+  --scope 'src/tools/search.ts' \
+  --scope 'src/navigation/rg.ts' \
+  --scope 'tests/unit/navigation/search.test.ts' \
+  --scope 'src/tools/tools.test.ts' \
+  --depends IMPL-IT3-1 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/search.test.ts src/tools/tools.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"search-rg-parity","actor":"Agent via tool call","scope":"fixture repo; run with and without an rg executable on PATH","environment":"local","duration":"<10s","observable":"same result set both ways; existing search tests unchanged and green","gate":"tests"}'
+genesis task add . --id IMPL-IT3-4 \
+  --outcome 'src/tools/readfile.ts keeps its parameters and adds contextLines, numbered output, streamed ranged reads (no whole-file load for a small range), binary notice, invalid-range errors and a truncation marker, using realpath workspace confinement. Calculator edit flow still works with numbered output.' \
+  --risk medium \
+  --requirement FR-48 \
+  --requirement NFR-15 \
+  --requirement AC-26 \
+  --scope 'src/tools/readfile.ts' \
+  --scope 'src/tools/workspace.ts' \
+  --scope 'tests/unit/navigation/read-file.test.ts' \
+  --scope 'src/tools/tools.test.ts' \
+  --depends IMPL-IT3-1 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/read-file.test.ts src/tools/tools.test.ts tests/integration.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"read-range-bounded","actor":"Agent via tool call","scope":"multi-MB fixture and tiny fixtures","environment":"local","duration":"<10s","observable":"exact numbered lines for a range, bounded memory/read for a huge file, error on bad range, binary notice, symlink escape rejected","gate":"tests"}'
+genesis task add . --id IMPL-IT3-5 \
+  --outcome 'src/navigation/find-tests.ts registers find_tests using the file/directory conventions for TS/JS and Python plus filename heuristics, scope-filtered and bounded.' \
+  --risk low \
+  --requirement FR-49 \
+  --requirement AC-27 \
+  --scope 'src/navigation/find-tests.ts' \
+  --scope 'tests/unit/navigation/find-tests.test.ts' \
+  --depends IMPL-IT3-1 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/find-tests.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"tests-found","actor":"Agent via tool call","scope":"TS, JS and Python fixture trees","environment":"local","duration":"<5s","observable":"expected test files returned, non-test files excluded","gate":"tests"}'
+genesis task add . --id IMPL-IT3-6 \
+  --outcome 'Pinned web-tree-sitter and tree-sitter-wasms added; src/navigation/symbols/{types,registry,locator,tree-sitter}.ts exist; a spike test proves TS, JS and Python grammars load and parse on the installed Node; registry rejects duplicates and returns no provider for unknown extensions; a static test proves src/navigation imports no LLM SDK. If the spike fails, stop and ask the human (DECISION-8e437c98).' \
+  --risk medium \
+  --requirement FR-50 \
+  --requirement FR-51 \
+  --requirement NFR-14 \
+  --requirement NFR-17 \
+  --requirement AC-28 \
+  --scope 'package.json' \
+  --scope 'package-lock.json' \
+  --scope 'src/navigation/symbols' \
+  --scope 'tests/unit/navigation/registry.test.ts' \
+  --scope 'tests/unit/navigation/tree-sitter.test.ts' \
+  --scope 'tests/unit/navigation/static.test.ts' \
+  --depends IMPL-IT3-0 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/registry.test.ts tests/unit/navigation/tree-sitter.test.ts tests/unit/navigation/static.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"grammar-spike","actor":"Developer","scope":"installed Node 26, offline after install","environment":"local","duration":"<10s","observable":"TS/JS/Python sources parse without error; a missing grammar returns a handled failure","gate":"tests"}'
+genesis task add . --id IMPL-IT3-7 \
+  --outcome 'src/navigation/symbols/languages/javascript-typescript.ts extracts functions, classes, methods, interfaces, type aliases, variables/constants and exported/default declarations with line ranges, signature and docstring where cheap; comments are ignored; registered for .ts .tsx .js .jsx.' \
+  --risk low \
+  --requirement FR-52 \
+  --requirement AC-29 \
+  --scope 'src/navigation/symbols/languages/javascript-typescript.ts' \
+  --scope 'tests/fixtures/symbols/ts' \
+  --scope 'tests/unit/navigation/ts-provider.test.ts' \
+  --depends IMPL-IT3-6 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/ts-provider.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"ts-symbols","actor":"find_symbol caller","scope":"TS and JS fixtures","environment":"local","duration":"<5s","observable":"each declaration kind found with correct start/end line; comment text is not a symbol","gate":"tests"}'
+genesis task add . --id IMPL-IT3-8 \
+  --outcome 'src/navigation/symbols/languages/python.ts extracts functions, classes, methods, nested and module-level definitions with line ranges; comments ignored; registered for .py.' \
+  --risk low \
+  --requirement FR-53 \
+  --requirement AC-30 \
+  --scope 'src/navigation/symbols/languages/python.ts' \
+  --scope 'tests/fixtures/symbols/python' \
+  --scope 'tests/unit/navigation/python-provider.test.ts' \
+  --depends IMPL-IT3-6 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/python-provider.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"py-symbols","actor":"find_symbol caller","scope":"Python fixture","environment":"local","duration":"<5s","observable":"def/class/method/nested found with correct lines; comment text is not a symbol","gate":"tests"}'
+genesis task add . --id IMPL-IT3-9 \
+  --outcome 'src/navigation/find-symbol.ts registers find_symbol (symbol_name, path?): scope-filtered candidates, structural lookup via the registry, word-matched text fallback (rg or built-in) for unsupported languages/no structural hit/grammar failure, correct source labels (tree-sitter | text-search | tree-sitter+text-search), bounded results.' \
+  --risk low \
+  --requirement FR-54 \
+  --requirement NFR-18 \
+  --requirement AC-31 \
+  --scope 'src/navigation/find-symbol.ts' \
+  --scope 'src/navigation/symbols/locator.ts' \
+  --scope 'tests/unit/navigation/find-symbol.test.ts' \
+  --depends IMPL-IT3-3 \
+  --depends IMPL-IT3-7 \
+  --depends IMPL-IT3-8 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/find-symbol.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"symbol-or-fallback","actor":"Agent via tool call","scope":"mixed TS/Python/unsupported-language fixture; grammar load forced to fail","environment":"local","duration":"<10s","observable":"right source label per case; not-found message; path restriction honored; text matches not called declarations","gate":"tests"}'
+genesis task add . --id IMPL-IT3-10 \
+  --outcome 'npm run add-language <name> (scripts/add-language.ts) validates the name, scaffolds provider, fixture and test, registers the provider, runs tsc and the new test, and prints TODOs; refuses invalid/existing names; touches no agent, context, provider, CLI or existing navigation file.' \
+  --risk low \
+  --requirement FR-55 \
+  --requirement AC-32 \
+  --scope 'scripts/add-language.ts' \
+  --scope 'package.json' \
+  --scope 'tests/unit/navigation/add-language.test.ts' \
+  --depends IMPL-IT3-7 \
+  --depends IMPL-IT3-8 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/add-language.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"add-java","actor":"Developer","scope":"temp copy of the repo","environment":"local","duration":"<60s","observable":"java scaffold generated, compiles, its test runs; protected directories unchanged; bad name refused","gate":"tests"}'
+genesis task add . --id IMPL-IT3-11 \
+  --outcome 'src/navigation/state.ts holds task-local NavigationState (files, symbols, references, tests, searches), records repeats without blocking, and resets per task; src/navigation/index.ts exposes registerNavigationTools(registry, root, state) for list_directory, find_symbol and find_tests. Nothing persisted.' \
+  --risk low \
+  --requirement FR-56 \
+  --requirement FR-57 \
+  --requirement AC-33 \
+  --scope 'src/navigation/state.ts' \
+  --scope 'src/navigation/index.ts' \
+  --scope 'tests/unit/navigation/state.test.ts' \
+  --depends IMPL-IT3-2 \
+  --depends IMPL-IT3-3 \
+  --depends IMPL-IT3-4 \
+  --depends IMPL-IT3-5 \
+  --depends IMPL-IT3-9 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/state.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"state-records","actor":"Navigation tools","scope":"scripted tool calls incl. identical repeated search","environment":"local","duration":"<5s","observable":"state records discoveries, repeat is recorded and still executed, new task starts empty","gate":"tests"}'
+genesis task add . --id IMPL-IT3-12 \
+  --outcome 'Twelve navigation log events added to the logger with the required fields (no secrets) and a per-task metrics summary built from NavigationState; relevance metrics are explicitly left to the evaluation harness.' \
+  --risk low \
+  --requirement FR-61 \
+  --requirement FR-62 \
+  --scope 'src/agent/logger.ts' \
+  --scope 'src/navigation/metrics.ts' \
+  --scope 'tests/unit/navigation/metrics.test.ts' \
+  --depends IMPL-IT3-11 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/metrics.test.ts src/agent/loop.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"events-emitted","actor":"Navigation tools","scope":"scripted calls with a log sink","environment":"local","duration":"<5s","observable":"each event appears once with taskId/timestamp/duration/count/size/source; no key material in output","gate":"tests"}'
+genesis task add . --id IMPL-IT3-13 \
+  --outcome 'src/context truncator/policies gain type-specific handling for list_directory, find_symbol and find_tests (priority and truncation) with no second budget; tests drive search, read, find_symbol, edit and run_command sequences through forced compaction and assert tool_use/tool_result id pairing (INVARIANT-64d38bc1) and ordering (INVARIANT-30642a03).' \
+  --risk medium \
+  --requirement FR-58 \
+  --requirement AC-34 \
+  --scope 'src/context/truncator.ts' \
+  --scope 'src/context/policies.ts' \
+  --scope 'tests/unit/context' \
+  --scope 'tests/unit/navigation/context-integration.test.ts' \
+  --depends IMPL-IT3-11 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/context tests/unit/navigation/context-integration.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"compaction-pairing","actor":"Agent loop with scripted LLM","scope":"long scripted run forcing compaction","environment":"local","duration":"<30s","observable":"every tool result follows its matching call after compaction; new tools truncated by type; no navigation output bypasses the Context Manager","gate":"tests"}'
+genesis task add . --id IMPL-IT3-14 \
+  --outcome 'CLI and Agent Loop register the navigation tools, own a fresh NavigationState per task, the system prompt describes the tools without a fixed sequence, and --debug-navigation prints scope exclusions, calls and a bounded summary; output without the flag is byte-identical to Iteration 2.' \
+  --risk medium \
+  --requirement FR-59 \
+  --requirement FR-60 \
+  --requirement AC-35 \
+  --scope 'src/cli/index.ts' \
+  --scope 'src/agent/loop.ts' \
+  --scope 'tests/unit/navigation/debug-navigation.test.ts' \
+  --scope 'src/agent/loop.test.ts' \
+  --depends IMPL-IT3-12 \
+  --depends IMPL-IT3-13 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/navigation/debug-navigation.test.ts src/agent/loop.test.ts tests/integration.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"debug-flag","actor":"Developer running the CLI with a scripted provider","scope":"fixture repo","environment":"local","duration":"<20s","observable":"flag on prints scope, calls, summary; flag off output equals the Iteration 2 snapshot; all tools visible to the provider","gate":"tests"}'
+genesis task add . --id IMPL-IT3-15 \
+  --outcome 'tests/integration/navigation.test.ts runs the full agent on a multi-file fixture repo with a scripted LLM using a navigation sequence different from the requirements example, then asserts final repository state and the verification command, not the sequence; Iteration 1 calculator integration still passes.' \
+  --risk low \
+  --requirement AC-36 \
+  --requirement NFR-19 \
+  --scope 'tests/integration' \
+  --scope 'tests/fixtures/nav-repo' \
+  --depends IMPL-IT3-14 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/integration' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"unknown-location-fix","actor":"Agent with scripted LLM","scope":"multi-file fixture repo copy","environment":"local","duration":"<30s","observable":"bug fixed and verification command passes via search, find_symbol, ranged read, edit, test","gate":"tests"}'
+genesis task add . --id IMPL-IT3-16 \
+  --outcome 'eval/iteration3/fixtures holds repositories A (TS/JS), B (Python), C (static HTML/CSS/JS), D (noisy) and an unsupported-language case, each with a task description and JSON ground-truth manifest; a test confirms descriptions do not leak relevant paths or target symbol names and each verification command runs red before the fix.' \
+  --risk low \
+  --requirement FR-63 \
+  --requirement AC-37 \
+  --scope 'eval/iteration3/fixtures' \
+  --scope 'tests/unit/eval/fixtures.test.ts' \
+  --depends IMPL-IT3-0 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/eval/fixtures.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"no-leak","actor":"Evaluator","scope":"six fixture tasks","environment":"local","duration":"<30s","observable":"no description contains a relevant path or target symbol; each verification fails before the fix","gate":"tests"}'
+genesis task add . --id IMPL-IT3-17 \
+  --outcome 'eval/iteration3/run.ts runs a task N times against baseline-src or current src, records per-run metrics, computes relevant/irrelevant files read and time to first relevant file from the manifest, and independently re-runs the verification command; check-results.ts validates result completeness. Tested on recorded logs with a scripted provider; no paid provider is called.' \
+  --risk medium \
+  --requirement FR-64 \
+  --requirement AC-38 \
+  --scope 'eval/iteration3/run.ts' \
+  --scope 'eval/iteration3/check-results.ts' \
+  --scope 'tests/unit/eval/harness.test.ts' \
+  --depends IMPL-IT3-12 \
+  --depends IMPL-IT3-16 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'tests:npx vitest run tests/unit/eval/harness.test.ts' \
+  --gate 'regression:npx vitest run' \
+  --scenario '{"id":"verifier-independent","actor":"Evaluator","scope":"recorded logs, scripted provider","environment":"local, no network","duration":"<60s","observable":"metrics match hand-computed values; a run whose verification fails is marked failed regardless of agent claim","gate":"tests"}'
+genesis task add . --id IMPL-IT3-18 \
+  --outcome 'BLOCKED until the human authorizes provider, model and run cap. One real-provider run that forces compaction over navigation tools completes with valid message pairing; the transcript and metrics are saved under eval/iteration3/real-context/.' \
+  --risk medium \
+  --requirement FR-58 \
+  --scope 'eval/iteration3/real-context' \
+  --depends IMPL-IT3-13 \
+  --depends IMPL-IT3-14 \
+  --depends IMPL-IT3-15 \
+  --gate 'result:node -e "const fs=require('\''fs'\'');const r=JSON.parse(fs.readFileSync('\''eval/iteration3/real-context/result.json'\'','\''utf8'\''));if(!r.pairingValid||!(r.compactions>0))throw new Error('\''invalid'\'');console.log('\''OK'\'')"' \
+  --scenario '{"id":"real-compaction","actor":"Evaluator with API key","scope":"real provider, authorized spend","environment":"network, paid","duration":"<10 min","observable":"run completes, compactions > 0, pairingValid true","gate":"result"}'
+genesis task add . --id IMPL-IT3-19 \
+  --outcome 'BLOCKED until authorized. Six tasks x 5 runs x {Iteration 2 baseline, Iteration 3} recorded under eval/iteration3/results/ and independently verified by the harness; check-results confirms 5 verified runs per cell.' \
+  --risk medium \
+  --requirement AC-39 \
+  --scope 'eval/iteration3/results' \
+  --depends IMPL-IT3-17 \
+  --depends IMPL-IT3-18 \
+  --gate 'results:npx tsx eval/iteration3/check-results.ts --min-runs 5' \
+  --scenario '{"id":"runs-complete","actor":"Evaluator with API key","scope":"real provider, authorized spend","environment":"network, paid","duration":"hours","observable":"every task/version cell has >=5 independently verified runs","gate":"results"}'
+genesis task add . --id IMPL-IT3-20 \
+  --outcome 'eval/iteration3/failure-analysis.md classifies each failure with the section 34 taxonomy, comparison.md compares baseline and Iteration 3, engineering-note.md answers the 14 questions, and README documents the tools, --debug-navigation, add-language and a navigation module map.' \
+  --risk low \
+  --requirement FR-65 \
+  --requirement NFR-20 \
+  --scope 'eval/iteration3' \
+  --scope 'README.md' \
+  --depends IMPL-IT3-19 \
+  --gate 'typecheck:npx tsc --noEmit' \
+  --gate 'regression:npx vitest run' \
+  --gate 'docs:node -e "const fs=require('\''fs'\'');for(const p of ['\''eval/iteration3/failure-analysis.md'\'','\''eval/iteration3/comparison.md'\'','\''eval/iteration3/engineering-note.md'\''])fs.accessSync(p);const n=fs.readFileSync('\''eval/iteration3/engineering-note.md'\'','\''utf8'\'');for(let i=1;i<=14;i++)if(!new RegExp('\''^'\''+i+'\''[.)]'\'','\''m'\'').test(n))throw new Error('\''question '\''+i+'\'' missing'\'');const r=fs.readFileSync('\''README.md'\'','\''utf8'\'');for(const k of ['\''list_directory'\'','\''find_symbol'\'','\''find_tests'\'','\''--debug-navigation'\'','\''add-language'\''])if(!r.includes(k))throw new Error('\''README missing '\''+k);console.log('\''OK'\'')"' \
+  --scenario '{"id":"note-complete","actor":"Reader","scope":"eval/iteration3 and README","environment":"local","duration":"one-off","observable":"14 numbered answers, taxonomy-classified failures, README covers every new tool and flag","gate":"docs"}'

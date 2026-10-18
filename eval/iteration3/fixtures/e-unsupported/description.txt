@@ -1,0 +1,1 @@
+A customer with exactly $100 in their account is told they have insufficient funds when they try to take out $100. They should be able to empty the account, but never go below zero. Fix the problem and verify it.

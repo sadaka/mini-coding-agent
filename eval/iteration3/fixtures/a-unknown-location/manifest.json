@@ -1,0 +1,8 @@
+{
+  "task": "tax-total-off-by-one-cent",
+  "repo_type": "A",
+  "relevant_files": ["src/billing/money.ts"],
+  "acceptable_files": ["src/cart/cart.ts"],
+  "target_symbols": ["roundCents"],
+  "verification": { "command": "node checks/total.check.ts" }
+}

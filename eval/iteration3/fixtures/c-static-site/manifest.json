@@ -1,0 +1,8 @@
+{
+  "task": "mobile-menu-never-opens",
+  "repo_type": "C",
+  "relevant_files": ["js/menu.js", "css/menu.css"],
+  "acceptable_files": ["index.html"],
+  "target_symbols": ["OPEN_CLASS", "toggled"],
+  "verification": { "command": "node checks/menu.check.js" }
+}

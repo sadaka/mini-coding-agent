@@ -1,0 +1,8 @@
+{
+  "task": "free-shipping-boundary",
+  "repo_type": "A",
+  "relevant_files": ["src/fulfilment/tariff.ts"],
+  "acceptable_files": [],
+  "target_symbols": ["DeliveryTariff", "FREE_FROM_CENTS"],
+  "verification": { "command": "node checks/delivery.check.ts" }
+}

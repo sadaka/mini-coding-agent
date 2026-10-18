@@ -1,0 +1,1 @@
+On a phone, tapping the hamburger button does nothing: the navigation links never appear. Make the navigation open when the button is tapped, and verify it.

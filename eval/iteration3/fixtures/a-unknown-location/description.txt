@@ -1,0 +1,1 @@
+Customers report that a single $19.99 item with 8.25% sales tax is charged $21.63 at checkout, but the correct total is $21.64. Some other carts are a cent low too. Fix the problem and verify the totals.

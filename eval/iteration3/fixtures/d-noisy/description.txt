@@ -1,0 +1,1 @@
+The weekly summary email lists the days of the week starting on Sunday, but our customers' weeks start on Monday. For example, the email for Wednesday 15 May 2024 should list 13 May through 19 May. Fix it and verify.

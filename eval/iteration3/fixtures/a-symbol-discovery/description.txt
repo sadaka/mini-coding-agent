@@ -1,0 +1,1 @@
+The storefront promises free shipping from $50 up, but an order of exactly $50.00 is still charged for shipping. Find where the charge is decided, fix it, and verify the boundary.

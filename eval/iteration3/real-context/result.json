@@ -1,0 +1,29 @@
+{
+  "provider": "claude",
+  "model": "claude-haiku-5-5",
+  "contextWindow": 6000,
+  "pairingValid": true,
+  "pairingProblems": [],
+  "compactions": 5,
+  "droppedItems": 2,
+  "llmRequests": 8,
+  "billedRequests": 8,
+  "tokens": {
+    "input": 27624,
+    "output": 1360
+  },
+  "costUsd": 0.003442,
+  "agentStatus": "success",
+  "agentReason": null,
+  "verified": true,
+  "wallMs": 13100,
+  "navigation": {
+    "callsByType": {},
+    "filesDiscovered": 0,
+    "filesRead": 3,
+    "repeatedSearches": 0,
+    "treeSitterSymbolMatches": 0,
+    "fallbackSymbolMatches": 0,
+    "symbolMatches": 0
+  }
+}
